@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, Calendar, Clock, FileText, Activity, ChevronLeft } from 'lucide-react';
+import { User, Phone, Mail, Calendar, Clock, FileText, Activity, ChevronLeft, Camera } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 // Sample patient data
 const patientsData = [
@@ -21,7 +22,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-01", reason: "Regular Checkup", notes: "Blood pressure normal" },
       { date: "2024-12-15", reason: "Flu Symptoms", notes: "Prescribed antibiotics" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 2,
@@ -37,7 +39,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-01-28", reason: "Diabetes Follow-up", notes: "A1C levels improved" },
       { date: "2024-12-20", reason: "Annual Physical", notes: "Overall health stable" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 3,
@@ -53,7 +56,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-05", reason: "Asthma Follow-up", notes: "Breathing improved" },
       { date: "2024-11-15", reason: "Respiratory Issues", notes: "New inhaler prescribed" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 4,
@@ -69,7 +73,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-03", reason: "Joint Pain", notes: "Prescribed new pain management regime" },
       { date: "2024-12-10", reason: "Blood Pressure Check", notes: "BP slightly elevated" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 5,
@@ -85,7 +90,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-07", reason: "Migraine Follow-up", notes: "Frequency of episodes reduced" },
       { date: "2024-12-22", reason: "Mental Health Check", notes: "Showing improvement" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 6,
@@ -101,7 +107,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-01-30", reason: "Back Pain Follow-up", notes: "Physical therapy recommended" },
       { date: "2024-12-18", reason: "Sleep Study Results", notes: "Sleep hygiene discussed" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 7,
@@ -117,7 +124,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-06", reason: "Hormonal Check", notes: "Hormone levels stabilizing" },
       { date: "2024-12-05", reason: "Blood Work", notes: "Iron levels improving" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 8,
@@ -133,7 +141,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-02", reason: "Cardiac Follow-up", notes: "ECG shows stable rhythm" },
       { date: "2024-12-12", reason: "Diabetes Check", notes: "Blood sugar well controlled" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 9,
@@ -149,7 +158,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-04", reason: "Thyroid Check", notes: "TSH levels normalized" },
       { date: "2024-12-08", reason: "General Check-up", notes: "Vitamin D levels improving" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 10,
@@ -165,7 +175,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-01-25", reason: "GERD Follow-up", notes: "Symptoms well controlled" },
       { date: "2024-12-15", reason: "Sleep Apnea Review", notes: "CPAP compliance good" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 11,
@@ -181,7 +192,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-02-08", reason: "Pain Management", notes: "New treatment plan discussed" },
       { date: "2024-12-20", reason: "Mental Health Review", notes: "Mood improving" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: 12,
@@ -197,7 +209,8 @@ const patientsData = [
     recentVisits: [
       { date: "2025-01-28", reason: "Joint Pain Follow-up", notes: "Mobility exercises recommended" },
       { date: "2024-12-18", reason: "Eye Pressure Check", notes: "Pressures stable" }
-    ]
+    ],
+    profileImage: "/placeholder-user.jpg"
   }
 ];
 
@@ -205,93 +218,143 @@ export default function PatientsPage() {
   const router = useRouter();
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
 
-  const PatientDetails = ({ patient }: { patient: any }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-lg p-6"
-    >
-      <button
-        onClick={() => setSelectedPatient(null)}
-        className="flex items-center text-blue-600 mb-4 hover:text-blue-700"
+  const PatientDetails = ({ patient }: { patient: any }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [profileImage, setProfileImage] = useState<string>(patient.profileImage || "");
+
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfileImage(reader.result as string);
+          // Here you would typically upload the image to your backend
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl shadow-lg p-6"
       >
-        <ChevronLeft className="w-4 h-4 mr-1" />
-        Back to Patients List
-      </button>
+        <button
+          onClick={() => setSelectedPatient(null)}
+          className="flex items-center text-blue-600 mb-4 hover:text-blue-700"
+        >
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Back to Patients List
+        </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">{patient.name}</h2>
-            <div className="mt-2 space-y-2">
-              <p className="text-gray-600">Age: {patient.age}</p>
-              <p className="text-gray-600">Gender: {patient.gender}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100">
+                  {profileImage ? (
+                    <Image 
+                      src={profileImage} 
+                      alt={`${patient.name}'s profile`}
+                      width={96}
+                      height={96}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <User className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-1.5 text-white hover:bg-blue-700"
+                  title="Upload profile picture"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">{patient.name}</h2>
+                <div className="mt-2 space-y-2">
+                  <p className="text-gray-600">Age: {patient.age}</p>
+                  <p className="text-gray-600">Gender: {patient.gender}</p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Phone className="w-4 h-4 mr-2 text-gray-500" />
-              <span>{patient.phone}</span>
-            </div>
-            <div className="flex items-center">
-              <Mail className="w-4 h-4 mr-2 text-gray-500" />
-              <span>{patient.email}</span>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-2">Medical History</h3>
-            <ul className="list-disc list-inside space-y-1">
-              {patient.medicalHistory.map((condition: string, index: number) => (
-                <li key={index} className="text-gray-600">{condition}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-2">Current Medications</h3>
-            <ul className="list-disc list-inside space-y-1">
-              {patient.medications.map((medication: string, index: number) => (
-                <li key={index} className="text-gray-600">{medication}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-2">Appointments</h3>
             <div className="space-y-2">
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-                <span>Last Visit: {patient.lastVisit}</span>
+                <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                <span>{patient.phone}</span>
               </div>
               <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2 text-gray-500" />
-                <span>Next Appointment: {patient.nextAppointment}</span>
+                <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                <span>{patient.email}</span>
               </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">Medical History</h3>
+              <ul className="list-disc list-inside space-y-1">
+                {patient.medicalHistory.map((condition: string, index: number) => (
+                  <li key={index} className="text-gray-600">{condition}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">Current Medications</h3>
+              <ul className="list-disc list-inside space-y-1">
+                {patient.medications.map((medication: string, index: number) => (
+                  <li key={index} className="text-gray-600">{medication}</li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-2">Recent Visits</h3>
-            <div className="space-y-4">
-              {patient.recentVisits.map((visit: any, index: number) => (
-                <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">{visit.date}</span>
-                    <span className="text-sm text-gray-500">{visit.reason}</span>
-                  </div>
-                  <p className="text-sm text-gray-600">{visit.notes}</p>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">Appointments</h3>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                  <span>Last Visit: {patient.lastVisit}</span>
                 </div>
-              ))}
+                <div className="flex items-center">
+                  <Clock className="w-4 h-4 mr-2 text-gray-500" />
+                  <span>Next Appointment: {patient.nextAppointment}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">Recent Visits</h3>
+              <div className="space-y-4">
+                {patient.recentVisits.map((visit: any, index: number) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{visit.date}</span>
+                      <span className="text-sm text-gray-500">{visit.reason}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{visit.notes}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </motion.div>
-  );
+      </motion.div>
+    );
+  };
 
   const PatientsList = () => (
     <div className="space-y-4">
