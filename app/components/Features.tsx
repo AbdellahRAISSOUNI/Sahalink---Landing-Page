@@ -81,7 +81,7 @@ export default function Features() {
             Next-Generation Medical Record Management
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Sahalink offers a suite of advanced features designed to revolutionize healthcare delivery and patient care.
+            WaslMed offers a suite of advanced features designed to revolutionize healthcare delivery and patient care.
           </p>
         </div>
 

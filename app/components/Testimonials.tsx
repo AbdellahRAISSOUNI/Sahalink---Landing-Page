@@ -37,7 +37,7 @@ export default function Testimonials() {
           <blockquote className="mt-10" ref={testimonialRef}>
             <div className="max-w-3xl mx-auto text-center text-2xl leading-9 font-medium text-gray-900">
               <p>
-                &ldquo;Sahalink has revolutionized our patient record management. We've seen a 30% increase in
+                &ldquo;WaslMed has revolutionized our patient record management. We've seen a 30% increase in
                 efficiency and a significant improvement in patient care since implementing their platform. It's
                 intuitive, secure, and exactly what we needed to modernize our healthcare delivery.&rdquo;
               </p>

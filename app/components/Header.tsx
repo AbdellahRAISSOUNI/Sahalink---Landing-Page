@@ -28,8 +28,8 @@ export default function Header() {
         <div className="flex justify-between items-center py-1/4 md:justify-start md:space-x-10">
           <div className="flex justify-start lg:w-0 lg:flex-1">
             <Link href="/">
-              <span className="sr-only">Sahalink</span>
-              <Image src="/logo.png" alt="Sahalink Logo" width={100} height={100} />
+              <span className="sr-only">WaslMed</span>
+              <Image src="/logo.png" alt="WaslMed Logo" width={100} height={100} />
             </Link>
           </div>
           <div className="-mr-2 -my-2 md:hidden">
@@ -55,6 +55,9 @@ export default function Header() {
           </nav>
           <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
             <Button asChild variant="ghost" className="ml-8 whitespace-nowrap hover:text-primary">
+              <Link href="/demo">Schedule Demo</Link>
+            </Button>
+            <Button asChild variant="ghost" className="ml-8 whitespace-nowrap hover:text-primary">
               <Link href="#cta">Get Started</Link>
             </Button>
           </div>
@@ -66,7 +69,7 @@ export default function Header() {
             <div className="pt-5 pb-6 px-5">
               <div className="flex items-center justify-between">
                 <div>
-                <Image src="/logo.png" alt="Sahalink Logo" width={100} height={100} />
+                <Image src="/logo.png" alt="WaslMed Logo" width={100} height={100} />
                 </div>
                 <div className="-mr-2">
                   <Button variant="ghost" onClick={() => setIsMobileMenuOpen(false)}>
@@ -90,6 +93,9 @@ export default function Header() {
               </div>
             </div>
             <div className="py-6 px-5 space-y-6">
+              <Button asChild className="w-full mb-3">
+                <Link href="/demo">Schedule Demo</Link>
+              </Button>
               <Button asChild className="w-full">
                 <Link href="#cta">Get Started</Link>
               </Button>

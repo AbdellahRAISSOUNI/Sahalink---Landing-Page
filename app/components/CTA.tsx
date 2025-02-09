@@ -42,7 +42,7 @@ export default function CTA() {
           transition={{ duration: 0.5 }}
         >
           <span className="block">Revolutionize your healthcare practice.</span>
-          <span className="block">Experience Sahalink today.</span>
+          <span className="block">Experience WaslMed today.</span>
         </motion.h2>
         <motion.p
           className="mt-4 text-lg leading-6 text-indigo-100"
@@ -63,7 +63,7 @@ export default function CTA() {
             size="lg"
             className="mt-8 w-full sm:w-auto glass-effect hover:bg-white hover:text-primary transition-colors duration-300"
           >
-            <a href="#" className="text-primary-foreground hover:text-primary">
+            <a href="/demo" className="text-primary-foreground hover:text-primary">
               Schedule a Demo
             </a>
           </Button>

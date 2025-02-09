@@ -54,7 +54,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                Sahalink empowers healthcare providers with cutting-edge AI and blockchain technology to manage patient
+                WaslMed empowers healthcare providers with cutting-edge AI and blockchain technology to manage patient
                 data securely and efficiently. Experience the future of healthcare management.
               </motion.p>
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
@@ -82,7 +82,7 @@ export default function Hero() {
         <img
           className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
           src="/thumbnail.png"
-          alt="Sahalink AI-powered dashboard"
+          alt="WaslMed AI-powered dashboard"
         />
       </div>
     </div>
