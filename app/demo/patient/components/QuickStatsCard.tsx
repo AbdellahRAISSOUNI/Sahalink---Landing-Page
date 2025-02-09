@@ -117,7 +117,7 @@ export default function QuickStatsCard({ stats }: QuickStatsCardProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 + 0.2 }}
-                className="absolute -right-4 -top-4 w-16 h-16 opacity-10"
+                className="absolute right-2 top-2 w-20 h-20 opacity-10"
               >
                 <item.icon className="w-full h-full" />
               </motion.div>

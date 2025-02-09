@@ -19,6 +19,7 @@ import ActionBar from './components/ActionBar';
 import MedicalHistoryCard from './components/MedicalHistoryCard';
 import QRCodeGenerator from './components/QRCodeGenerator';
 import { QRCodeSVG } from 'qrcode.react';
+import NotificationPanel from './components/NotificationPanel';
 
 export default function PatientDemoPage() {
   const router = useRouter();
@@ -39,31 +40,31 @@ export default function PatientDemoPage() {
 
   const [patientData, setPatientData] = useState({
     personalInfo: {
-      name: 'John Anderson',
-      age: 35,
+      name: 'Abdellah Raissouni',
+      age: 20,
       gender: 'Male',
       bloodType: 'A+',
-      height: '175 cm',
-      weight: '70 kg',
-      nationalId: 'SA123456789',
-      dateOfBirth: '1990-01-15',
-      maritalStatus: 'Married',
+      height: '167 cm',
+      weight: '65 kg',
+      nationalId: 'MAR123456789',
+      dateOfBirth: '2003-09-28',
+      maritalStatus: 'Single',
       occupation: 'Software Engineer',
       insurance: 'Premium Health Care',
-      nationality: 'Saudi Arabian',
-      languages: ['Arabic', 'English'],
+      nationality: 'Morocco',
+      languages: ['Arabic', 'English', 'Spanish', 'French'],
       emergencyContacts: [
         {
-          name: 'Sarah Anderson',
-          relation: 'Spouse',
-          phone: '+966 50 123 4567',
-          address: '123 Palm Street, Riyadh'
+          name: 'Naoufal Raissouni',
+          relation: 'Father',
+          phone: '+212 50 123 4567',
+          address: '123 Palm Street, Tetouan'
         },
         {
-          name: 'Mike Anderson',
+          name: 'Rahid Raissouni',
           relation: 'Brother',
-          phone: '+966 55 987 6543',
-          address: '456 Date Street, Jeddah'
+          phone: '+212 55 987 6543',
+          address: '456 Date Street, Tetouan'
         }
       ]
     },
@@ -339,22 +340,39 @@ export default function PatientDemoPage() {
   const [notifications, setNotifications] = useState([
     {
       id: 1,
-      title: 'Appointment Reminder',
+      title: 'Upcoming Appointment',
       message: 'You have an appointment with Dr. Sarah Al-Rashid tomorrow at 10:00 AM',
-      type: 'info',
+      time: '1 hour ago',
       read: false,
-      date: '2024-02-10'
+      type: 'appointment'
     },
     {
       id: 2,
-      title: 'Medication Reminder',
-      message: 'Time to take your Metformin medication',
-      type: 'warning',
+      title: 'New Lab Results',
+      message: 'Your recent blood work results are now available. Click to view.',
+      time: '2 hours ago',
       read: false,
-      date: '2024-02-09'
+      type: 'result'
+    },
+    {
+      id: 3,
+      title: 'Medication Reminder',
+      message: 'Time to take your evening dose of Metformin (500mg)',
+      time: '30 minutes ago',
+      read: false,
+      type: 'medication'
+    },
+    {
+      id: 4,
+      title: 'Health Achievement',
+      message: 'Congratulations! You\'ve maintained a healthy blood pressure for 30 days straight. Keep up the good work! 🎉',
+      time: 'Just now',
+      read: false,
+      type: 'general'
     }
   ]);
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(3); // Initial unread count
 
   const generateQRCode = () => {
     const medicalSummary = {
@@ -382,9 +400,8 @@ export default function PatientDemoPage() {
 
   const handleNotificationClick = () => {
     setShowNotificationPanel(!showNotificationPanel);
-    if (showNotificationPanel) {
-      // Mark all notifications as read when closing the panel
-      setNotifications(notifications.map(notif => ({ ...notif, read: true })));
+    if (unreadNotifications > 0) {
+      setUnreadNotifications(0); // Clear unread count when notifications are opened
     }
   };
 
@@ -392,7 +409,13 @@ export default function PatientDemoPage() {
     showToast('Settings panel will be available soon');
   };
 
-  const unreadNotifications = notifications.filter(n => !n.read).length;
+  const handleNotificationRead = (id: number) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ));
+  };
+
+  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -454,6 +477,15 @@ export default function PatientDemoPage() {
           onSettingsClick={handleSettingsClick}
           onLogout={() => setIsLoggedIn(false)}
         />
+        
+        <AnimatePresence>
+          <NotificationPanel
+            show={showNotificationPanel}
+            onClose={() => setShowNotificationPanel(false)}
+            notifications={notifications}
+            onNotificationRead={handleNotificationRead}
+          />
+        </AnimatePresence>
 
         <div className="grid grid-cols-1 gap-6 mt-6">
           <ActionBar 
@@ -523,7 +555,7 @@ export default function PatientDemoPage() {
           </AnimatePresence>
 
           {/* Notification Panel */}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {showNotificationPanel && (
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -561,7 +593,7 @@ export default function PatientDemoPage() {
                           <div>
                             <h4 className="font-medium text-gray-800">{notification.title}</h4>
                             <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">{notification.date}</p>
+                            <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
                           </div>
                           {!notification.read && (
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -573,7 +605,7 @@ export default function PatientDemoPage() {
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
 
           {/* Print Preview Modal */}
           {showPrintPreview && (
@@ -830,7 +862,7 @@ export default function PatientDemoPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 4v1m6 11h2m-6 0h-2m0 0H8m0 0V20m15-1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  d="M12 4v1m6 11h2m-6 0h-2m0 0H8m0 0H5m0 0H2m0 0l3-3m0 0l-3-3m3 3v18"
                 />
               </svg>
               <span>Generate QR Code</span>
