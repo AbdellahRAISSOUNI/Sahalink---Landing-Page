@@ -98,44 +98,64 @@ export default function Header() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden">
-          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 backdrop-filter backdrop-blur-lg bg-white bg-opacity-30 divide-y-2 divide-gray-50">
-            <div className="pt-5 pb-6 px-5">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.2 }}
+          className="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
+        >
+          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white divide-y divide-gray-50">
+            <div className="pt-5 pb-6 px-5 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                <Image src="/logo.png" alt="WaslMed Logo" width={100} height={100} />
+                  <Image src="/logo.png" alt="WaslMed Logo" width={80} height={80} />
                 </div>
                 <div className="-mr-2">
-                  <Button variant="ghost" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="rounded-md p-2 inline-flex items-center justify-center hover:bg-gray-100 focus:outline-none"
+                  >
                     <span className="sr-only">Close menu</span>
                     <X className="h-6 w-6" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
               <div className="mt-6">
-                <nav className="grid gap-y-8">
-                  <Link href="#features" className="-m-3 p-3 flex items-center rounded-md hover:bg-gray-50">
-                    <span className="ml-3 text-base font-medium text-gray-900">Features</span>
-                  </Link>
-                  <Link href="#testimonials" className="-m-3 p-3 flex items-center rounded-md hover:bg-gray-50">
-                    <span className="ml-3 text-base font-medium text-gray-900">Testimonials</span>
-                  </Link>
-                  <Link href="#pricing" className="-m-3 p-3 flex items-center rounded-md hover:bg-gray-50">
-                    <span className="ml-3 text-base font-medium text-gray-900">Pricing</span>
-                  </Link>
+                <nav className="grid grid-cols-1 gap-4">
+                  {["features", "testimonials", "pricing"].map((item) => (
+                    <Link
+                      key={item}
+                      href={`#${item}`}
+                      className="px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50 transition-colors duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
+                    </Link>
+                  ))}
                 </nav>
               </div>
-            </div>
-            <div className="py-6 px-5 space-y-6">
-              <Button asChild className="w-full mb-3">
-                <Link href="/demo">Schedule Demo</Link>
-              </Button>
-              <Button asChild className="w-full">
-                <Link href="#cta">Get Started</Link>
-              </Button>
+              <div className="mt-6 space-y-4">
+                <Button 
+                  asChild 
+                  variant="ghost"
+                  className="w-full justify-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link href="/demo">Schedule Demo</Link>
+                </Button>
+                <Button 
+                  asChild 
+                  className="w-full justify-center bg-primary hover:bg-primary/90"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Link href="#cta">Get Started</Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </header>
   )

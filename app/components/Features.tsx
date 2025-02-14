@@ -62,12 +62,12 @@ export default function Features() {
   const [hoveredFeature, setHoveredFeature] = useState<string | null>(null)
 
   return (
-    <section className="relative py-24 overflow-hidden bg-gradient-to-b from-gray-50 to-white" id="features">
+    <section className="relative py-16 sm:py-20 lg:py-24 overflow-hidden bg-gradient-to-b from-gray-50 to-white" id="features">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
+        <div className="absolute top-0 left-0 w-72 sm:w-96 h-72 sm:h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
+        <div className="absolute top-0 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-0 left-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,20 +76,20 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
         >
           <span className="inline-block px-4 py-1 mb-4 text-sm font-semibold text-green-600 bg-green-50 rounded-full">
             Innovative Features
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
             Transform Your Healthcare Practice
           </h2>
-          <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
+          <p className="max-w-3xl mx-auto text-lg sm:text-xl text-gray-600 leading-relaxed">
             Experience the future of healthcare with our innovative suite of features designed to elevate patient care and streamline operations.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.name}
@@ -99,68 +99,45 @@ export default function Features() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               onHoverStart={() => setHoveredFeature(feature.name)}
               onHoverEnd={() => setHoveredFeature(null)}
-              className="group relative p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-opacity-95"
-              style={{ 
-                background: hoveredFeature === feature.name ? feature.bgPattern : 'white',
-                boxShadow: hoveredFeature === feature.name ? `0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 20px 0 ${feature.name === 'Smart Health Analytics' ? 'rgba(99, 102, 241, 0.3)' : 
-                  feature.name === 'Military-Grade Security' ? 'rgba(244, 63, 94, 0.3)' :
-                  feature.name === 'Performance Analytics' ? 'rgba(6, 182, 212, 0.3)' :
-                  feature.name === 'Global Healthcare Network' ? 'rgba(20, 184, 166, 0.3)' :
-                  feature.name === 'Advanced Diagnostics' ? 'rgba(245, 158, 11, 0.3)' :
-                  'rgba(16, 185, 129, 0.3)'}` : ''
+              className="relative p-6 sm:p-8 rounded-2xl bg-white shadow-xl hover:shadow-2xl transition-all duration-300 group"
+              style={{
+                backgroundImage: feature.bgPattern,
               }}
             >
-              <div className={`absolute -top-5 left-8 w-14 h-14 rounded-xl bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl group-hover:shadow-${feature.color.split('-')[2]}/30`}>
-                <feature.icon className="h-7 w-7 text-white" aria-hidden="true" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/0 rounded-2xl transition-opacity duration-300 group-hover:opacity-0" />
+              <div className={`relative inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} mb-6`}>
+                <feature.icon className="w-6 h-6 text-white" />
               </div>
-              
-              <div className="mt-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center group-hover:text-green-600 transition-colors duration-300">
-                  {feature.name}
-                  <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300" />
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">{feature.description}</p>
-                
-                <div className="flex flex-wrap gap-2">
-                  {feature.stats.map((stat, statIndex) => (
-                    <span
-                      key={statIndex}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 group-hover:bg-opacity-50 transition-all duration-300"
-                    >
-                      {stat}
-                    </span>
-                  ))}
-                </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{feature.name}</h3>
+              <p className="text-base sm:text-lg text-gray-600 mb-6">{feature.description}</p>
+              <div className="flex flex-wrap gap-3">
+                {feature.stats.map((stat, statIndex) => (
+                  <span
+                    key={statIndex}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
+                  >
+                    {stat}
+                  </span>
+                ))}
               </div>
-
-              <motion.div
-                className={`absolute bottom-0 left-0 w-full h-1.5 bg-gradient-to-r ${feature.color} rounded-b-2xl`}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: hoveredFeature === feature.name ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-              />
+              <AnimatePresence>
+                {hoveredFeature === feature.name && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="absolute -right-2 -bottom-2 p-4"
+                  >
+                    <div className="p-2 bg-white rounded-full shadow-lg">
+                      <ArrowRight className="w-5 h-5 text-primary" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   )
 }

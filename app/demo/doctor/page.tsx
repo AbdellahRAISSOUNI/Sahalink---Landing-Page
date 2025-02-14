@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Users, Clock, ChartBar, Bell, Settings, LogOut, Search, User, FileText, QrCode, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Users, Clock, ChartBar, Bell, Settings, LogOut, Search, User, FileText, QrCode, X, BarChart, FileCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import DemoHeader from '../components/DemoHeader';
 import dynamic from 'next/dynamic';
@@ -10,6 +10,11 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import DashboardContent from '@/app/components/doctor/DashboardContent';
 import AppointmentsContent from '@/app/components/doctor/AppointmentsContent';
 import PatientsContent from '@/app/components/doctor/PatientsContent';
+import DocumentsContent from '@/app/components/doctor/DocumentsContent';
+import SettingsContent from '@/app/components/doctor/SettingsContent';
+import AnalyticsContent from '@/app/components/doctor/AnalyticsContent';
+import MedicalRecordsContent from '@/app/components/doctor/MedicalRecordsContent';
+import ScheduleContent from '@/app/components/doctor/ScheduleContent';
 
 export default function DoctorDemoPage() {
   const router = useRouter();
@@ -22,6 +27,7 @@ export default function DoctorDemoPage() {
   const [activeSection, setActiveSection] = useState('Dashboard');
   const [activePatient, setActivePatient] = useState(null);
   const [showPatientDetails, setShowPatientDetails] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Check login state on mount
   useEffect(() => {
@@ -88,6 +94,17 @@ export default function DoctorDemoPage() {
       console.error(error);
     });
   };
+
+  const menuItems = [
+    { id: 'Dashboard', icon: ChartBar, label: 'Dashboard' },
+    { id: 'Analytics', icon: BarChart, label: 'Analytics' },
+    { id: 'Schedule', icon: Calendar, label: 'Schedule' },
+    { id: 'Patients', icon: Users, label: 'Patients' },
+    { id: 'MedicalRecords', icon: FileCheck, label: 'Medical Records' },
+    { id: 'Appointments', icon: Clock, label: 'Appointments' },
+    { id: 'Documents', icon: FileText, label: 'Documents' },
+    { id: 'Settings', icon: Settings, label: 'Settings' },
+  ];
 
   const NotificationsPanel = () => (
     <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50">
@@ -156,26 +173,155 @@ export default function DoctorDemoPage() {
     </div>
   );
 
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'Dashboard':
-        return <DashboardContent />;
-      case 'Appointments':
-        return <AppointmentsContent />;
-      case 'Patients':
-        return <PatientsContent />;
-      case 'Documents':
-        return <div className="p-6">Documents section coming soon...</div>;
-      case 'Settings':
-        return <div className="p-6">Settings section coming soon...</div>;
-      default:
-        return <DashboardContent />;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      {!isLoggedIn ? (
+    <div className="min-h-screen bg-gray-100">
+      {isLoggedIn ? (
+        <div className="flex h-screen overflow-hidden">
+          {/* Mobile Overlay */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          )}
+
+          {/* Sidebar */}
+          <aside 
+            className={`
+              fixed md:relative
+              inset-y-0 left-0
+              z-30 md:z-0
+              w-[280px] md:w-[280px]
+              transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+              transition-all duration-300 ease-in-out
+              bg-white shadow-lg
+              flex flex-col
+            `}
+          >
+            <div className="p-4 border-b flex items-center justify-between h-16">
+              <h2 className="text-xl font-semibold text-gray-800 whitespace-nowrap">
+                WaslMed
+              </h2>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="md:hidden text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Sidebar Navigation */}
+            <nav className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-2">
+                {menuItems.map((item) => (
+                  <motion.button
+                    key={item.id}
+                    whileHover={{ x: 5 }}
+                    onClick={() => {
+                      setActiveSection(item.id);
+                      if (window.innerWidth < 768) setIsSidebarOpen(false);
+                    }}
+                    className={`
+                      w-full flex items-center
+                      px-3 py-3 rounded-lg
+                      text-gray-600 hover:bg-blue-50 hover:text-blue-600
+                      transition-colors duration-200
+                      ${activeSection === item.id ? 'bg-blue-50 text-blue-600' : ''}
+                    `}
+                  >
+                    <item.icon className="w-6 h-6" />
+                    <span className="ml-3 whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </motion.button>
+                ))}
+
+                <motion.button
+                  whileHover={{ x: 5 }}
+                  onClick={handleLogout}
+                  className="w-full flex items-center px-3 py-3 text-red-600 hover:bg-red-50 rounded-lg"
+                >
+                  <LogOut className="w-6 h-6" />
+                  <span className="ml-3 whitespace-nowrap">
+                    Logout
+                  </span>
+                </motion.button>
+              </div>
+            </nav>
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 flex flex-col h-screen overflow-hidden">
+            {/* Header */}
+            <header className="bg-white shadow-sm h-16 flex items-center px-4">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="text-gray-500 hover:text-gray-700 md:hidden"
+                  >
+                    <ArrowLeft size={24} className={`transform transition-transform ${isSidebarOpen ? '' : 'rotate-180'}`} />
+                  </button>
+                  <h1 className="text-xl font-semibold text-gray-800 hidden md:block">
+                    {activeSection}
+                  </h1>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={startQRScanner}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    <QrCode className="w-5 h-5" />
+                    <span>Scan Patient QR</span>
+                  </motion.button>
+
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowNotifications(!showNotifications)} 
+                      className="p-2 hover:bg-gray-100 rounded-full"
+                    >
+                      <Bell className="w-5 h-5 text-gray-600" />
+                      {notifications.length > 0 && (
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                      )}
+                    </button>
+                    {showNotifications && <NotificationsPanel />}
+                  </div>
+
+                  <div className="relative">
+                    <button 
+                      onClick={() => setShowSettings(!showSettings)} 
+                      className="p-2 hover:bg-gray-100 rounded-full"
+                    >
+                      <Settings className="w-5 h-5 text-gray-600" />
+                    </button>
+                    {showSettings && <SettingsPanel />}
+                  </div>
+
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-blue-600" />
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            {/* Main Content Area */}
+            <div className="flex-1 overflow-auto bg-gray-50">
+              {activeSection === 'Dashboard' && <DashboardContent />}
+              {activeSection === 'Analytics' && <AnalyticsContent />}
+              {activeSection === 'Schedule' && <ScheduleContent />}
+              {activeSection === 'Patients' && <PatientsContent />}
+              {activeSection === 'MedicalRecords' && <MedicalRecordsContent />}
+              {activeSection === 'Appointments' && <AppointmentsContent />}
+              {activeSection === 'Documents' && <DocumentsContent />}
+              {activeSection === 'Settings' && <SettingsContent />}
+            </div>
+          </main>
+        </div>
+      ) : (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,90 +386,6 @@ export default function DoctorDemoPage() {
             </form>
           </div>
         </motion.div>
-      ) : (
-        <div className="min-h-screen flex">
-          {/* Sidebar */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-64 bg-white shadow-lg"
-          >
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800">WaslMed</h2>
-            </div>
-            <nav className="mt-6">
-              {[
-                { name: 'Dashboard', icon: ChartBar },
-                { name: 'Appointments', icon: Calendar },
-                { name: 'Patients', icon: Users },
-                { name: 'Documents', icon: FileText },
-                { name: 'Settings', icon: Settings },
-              ].map((item, i) => (
-                <motion.button
-                  key={item.name}
-                  whileHover={{ x: 5 }}
-                  onClick={() => setActiveSection(item.name)}
-                  className={`w-full flex items-center space-x-3 px-6 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 ${
-                    activeSection === item.name ? 'bg-blue-50 text-blue-600' : ''
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.name}</span>
-                </motion.button>
-              ))}
-              <motion.button
-                whileHover={{ x: 5 }}
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-3 px-6 py-3 text-red-600 hover:bg-red-50"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Logout</span>
-              </motion.button>
-            </nav>
-          </motion.div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-800">Welcome back, Dr. {username}</h1>
-                  <p className="text-gray-600">Here's what's happening with your patients today.</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={startQRScanner}
-                    className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    <QrCode className="w-5 h-5" />
-                    <span>Scan Patient QR</span>
-                  </motion.button>
-                  <div className="relative">
-                    <button 
-                      onClick={() => setShowNotifications(!showNotifications)} 
-                      className="p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <Bell className="w-5 h-5 text-gray-600" />
-                    </button>
-                    {showNotifications && <NotificationsPanel />}
-                  </div>
-                  <div className="relative">
-                    <button 
-                      onClick={() => setShowSettings(!showSettings)} 
-                      className="p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <Settings className="w-5 h-5 text-gray-600" />
-                    </button>
-                    {showSettings && <SettingsPanel />}
-                  </div>
-                </div>
-              </div>
-              {renderContent()}
-            </div>
-          </div>
-        </div>
       )}
 
       {showQRScanner && (

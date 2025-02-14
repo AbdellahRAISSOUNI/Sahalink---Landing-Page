@@ -16,9 +16,9 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        <div className="relative z-10 lg:flex items-center gap-8">
-          <div className="flex-1 px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-            <div className="space-y-12 max-w-2xl">
+        <div className="relative z-10 lg:flex items-center gap-8 px-4 sm:px-6 lg:px-8">
+          <div className="flex-1 py-12 sm:py-16 lg:py-32">
+            <div className="space-y-8 sm:space-y-12 max-w-2xl">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -27,7 +27,7 @@ export default function Hero() {
               >
                 <div className="absolute -inset-2 bg-gradient-to-r from-green-100/50 to-blue-100/50 rounded-2xl blur-3xl opacity-30 -z-10" />
                 <motion.h1
-                  className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight"
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
@@ -37,12 +37,12 @@ export default function Hero() {
                     <div className="absolute -inset-1 bg-green-100 rounded-lg blur-2xl opacity-20" />
                   </span>
                   <span className="block gradient-text relative">
-                    medical records
+                    Medical records
                     <div className="absolute -inset-1 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg blur-2xl opacity-30" />
                   </span>
                 </motion.h1>
                 <motion.p
-                  className="mt-8 text-lg md:text-xl text-gray-600 leading-relaxed"
+                  className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
@@ -51,7 +51,7 @@ export default function Hero() {
                   data securely and efficiently. Experience the future of healthcare management.
                 </motion.p>
                 <motion.div 
-                  className="mt-10 flex flex-col sm:flex-row gap-4"
+                  className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
