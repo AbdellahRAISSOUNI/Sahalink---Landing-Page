@@ -468,6 +468,79 @@ export default function PatientDemoPage() {
     progress: 78
   };
 
+  const MedicalMiniGame = () => {
+    const [currentFact, setCurrentFact] = useState('');
+    const [powerUps, setPowerUps] = useState<Array<{ id: number; type: 'antibody' | 'vitamin'; x: number; y: number }>>([]);
+
+    // Educational facts about immune system
+    const immuneFacts = [
+      'T-cells identify and attack infected cells!',
+      'Antibodies neutralize pathogens in the bloodstream!',
+      'Fever helps slow pathogen reproduction!',
+      'Phagocytes engulf and digest invaders!'
+    ];
+
+    useEffect(() => {
+      const factInterval = setInterval(() => {
+        setCurrentFact(immuneFacts[Math.floor(Math.random() * immuneFacts.length)]);
+      }, 10000);
+
+      const powerUpSpawner = setInterval(() => {
+        setPowerUps(prev => [...prev, {
+          id: Date.now(),
+          type: Math.random() > 0.5 ? 'antibody' : 'vitamin',
+          x: Math.random() * 90,
+          y: Math.random() * 90
+        }]);
+      }, 15000);
+
+      return () => {
+        clearInterval(factInterval);
+        clearInterval(powerUpSpawner);
+      };
+    }, []);
+
+    const handleCollectPowerUp = (id: number, type: 'antibody' | 'vitamin') => {
+      setPowerUps(prev => prev.filter(p => p.id !== id));
+      setEnergy(e => Math.min(100, e + (type === 'antibody' ? 30 : 15)));
+      setScore(s => s + (type === 'antibody' ? 200 : 100));
+    };
+
+    return (
+      <div className="fixed bottom-4 right-4 ...">
+        {/* Fact Popup */}
+        {currentFact && (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            className="absolute -top-24 left-0 right-0 bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm"
+          >
+            💡 Did you know?
+            <div className="text-blue-800 mt-1">{currentFact}</div>
+          </motion.div>
+        )}
+
+        {/* Power-Ups */}
+        {powerUps.map(({ id, type, x, y }) => (
+          <motion.div
+            key={id}
+            className="absolute cursor-pointer text-2xl"
+            style={{ left: `${x}%`, top: `${y}%` }}
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 360]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+            onClick={() => handleCollectPowerUp(id, type)}
+          >
+            {type === 'antibody' ? '🛡️' : '🟢'}
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   if (isLoggedIn) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -954,6 +1027,8 @@ export default function PatientDemoPage() {
               conditions: patientData.medicalHistory.filter(h => h.status === 'Ongoing').map(h => h.condition)
             }} />
           </motion.div>
+
+          <MedicalMiniGame />
         </div>
       </div>
     );
