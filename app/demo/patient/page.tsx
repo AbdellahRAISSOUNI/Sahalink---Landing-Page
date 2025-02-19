@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { X, Download, Check, Share2, User, Building, Calendar, ClipboardList, Award, Trophy, Star, Printer } from 'lucide-react';
+import { X, Download, Check, Share2, User, Building, Calendar, ClipboardList, Award, Trophy, Star, Printer, Brain, Sparkles, Bot, MessageSquare, Activity, Zap, HeartPulse, Stethoscope, Microscope, BrainCircuit } from 'lucide-react';
 import Header from './components/Header';
 import ProfileCard from './components/ProfileCard';
 import VitalSignsCard from './components/VitalSignsCard';
@@ -37,6 +37,37 @@ export default function PatientDemoPage() {
   const [showDoctorHistory, setShowDoctorHistory] = useState(false);
   const [showBooking, setShowBooking] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [showAIChat, setShowAIChat] = useState(false);
+  const [aiMessages, setAiMessages] = useState([
+    { role: 'assistant', content: 'Hello! I\'m your AI health assistant. How can I help you today?' }
+  ]);
+  const [isAITyping, setIsAITyping] = useState(false);
+  const [healthPredictions, setHealthPredictions] = useState({
+    diabetesRisk: { score: 0.15, trend: 'decreasing', recommendations: ['Maintain healthy diet', 'Regular exercise'] },
+    cardiacHealth: { score: 0.85, trend: 'stable', recommendations: ['Continue blood pressure monitoring'] },
+    mentalWellness: { score: 0.92, trend: 'improving', recommendations: ['Maintain work-life balance'] },
+  });
+  const [aiInsights, setAiInsights] = useState([
+    { type: 'alert', message: 'Blood pressure trending slightly high this week', severity: 'medium' },
+    { type: 'improvement', message: 'Sleep quality has improved by 15% this month', severity: 'low' },
+    { type: 'recommendation', message: 'Consider scheduling a follow-up for diabetes management', severity: 'high' },
+  ]);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
+  const [aiActiveTab, setAiActiveTab] = useState('symptoms');
+  const [symptomInput, setSymptomInput] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [aiDiagnosis, setAiDiagnosis] = useState(null);
+  const [voiceInput, setVoiceInput] = useState(false);
+  const [healthScore, setHealthScore] = useState({
+    overall: 87,
+    categories: {
+      physical: 90,
+      mental: 85,
+      nutrition: 82,
+      sleep: 88,
+      activity: 84
+    }
+  });
 
   const [patientData, setPatientData] = useState({
     personalInfo: {
@@ -541,6 +572,379 @@ export default function PatientDemoPage() {
     );
   };
 
+  const simulateAIResponse = async (message) => {
+    setIsAITyping(true);
+    const responses = [
+      "Based on your recent vital signs, I notice your blood pressure has been well-maintained. Keep up your medication schedule!",
+      "Your latest lab results show improvement in blood glucose levels. Would you like me to explain the trends?",
+      "I've analyzed your sleep patterns and noticed some irregularities. Consider adjusting your evening routine.",
+      "Your medication adherence has been excellent this month. This is positively impacting your health metrics."
+    ];
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setAiMessages(prev => [...prev, 
+      { role: 'user', content: message },
+      { role: 'assistant', content: responses[Math.floor(Math.random() * responses.length)] }
+    ]);
+    setIsAITyping(false);
+  };
+
+  const AIComponents = () => (
+    <div className="mt-8 space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 shadow-lg"
+      >
+        <div className="flex items-center mb-4">
+          <Brain className="w-6 h-6 text-purple-600 mr-2" />
+          <h3 className="text-xl font-semibold text-gray-800">AI Health Insights</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Object.entries(healthPredictions).map(([key, data]) => (
+            <div key={key} className="bg-white rounded-lg p-4 shadow">
+              <h4 className="font-medium text-gray-700 mb-2">{key.replace(/([A-Z])/g, ' $1').trim()}</h4>
+              <div className="flex items-center mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full ${
+                      data.score > 0.7 ? 'bg-green-500' : data.score > 0.3 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${data.score * 100}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2 text-sm text-gray-600">{Math.round(data.score * 100)}%</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <span className={`mr-2 ${
+                  data.trend === 'improving' ? 'text-green-500' : 
+                  data.trend === 'decreasing' ? 'text-red-500' : 
+                  'text-yellow-500'
+                }`}>●</span>
+                {data.trend}
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl shadow-lg overflow-hidden"
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center">
+            <Bot className="w-6 h-6 text-blue-600 mr-2" />
+            <h3 className="text-xl font-semibold text-gray-800">AI Assistant Chat</h3>
+          </div>
+          <button
+            onClick={() => setShowAIChat(!showAIChat)}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            {showAIChat ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+          </button>
+        </div>
+        {showAIChat && (
+          <div className="p-4">
+            <div className="h-64 overflow-y-auto mb-4 space-y-4">
+              {aiMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-3 rounded-lg ${
+                      msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {isAITyping && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 p-3 rounded-lg">
+                    <span className="animate-pulse">Typing...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Ask about your health..."
+                className="flex-1 p-2 border rounded-lg"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim()) {
+                    simulateAIResponse(e.target.value);
+                    e.target.value = '';
+                  }
+                }}
+              />
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                onClick={() => simulateAIResponse("How are my vital signs today?")}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl p-6 shadow-lg"
+      >
+        <div className="flex items-center mb-4">
+          <Sparkles className="w-6 h-6 text-yellow-500 mr-2" />
+          <h3 className="text-xl font-semibold text-gray-800">AI Generated Insights</h3>
+        </div>
+        <div className="space-y-4">
+          {aiInsights.map((insight, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`p-4 rounded-lg border-l-4 ${
+                insight.severity === 'high' ? 'border-red-500 bg-red-50' :
+                insight.severity === 'medium' ? 'border-yellow-500 bg-yellow-50' :
+                'border-green-500 bg-green-50'
+              }`}
+            >
+              <div className="flex items-start">
+                <div className="flex-1">
+                  <p className={`text-sm ${
+                    insight.severity === 'high' ? 'text-red-700' :
+                    insight.severity === 'medium' ? 'text-yellow-700' :
+                    'text-green-700'
+                  }`}>
+                    {insight.message}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+
+  const simulateSymptomAnalysis = async (symptoms) => {
+    setAnalyzing(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const mockDiagnosis = {
+      possibleConditions: [
+        { name: 'Common Cold', probability: 0.85, urgency: 'low' },
+        { name: 'Seasonal Allergies', probability: 0.65, urgency: 'low' },
+        { name: 'Sinusitis', probability: 0.45, urgency: 'medium' }
+      ],
+      recommendations: [
+        { type: 'rest', description: 'Get adequate rest for the next 48 hours' },
+        { type: 'hydration', description: 'Increase fluid intake to 3L per day' },
+        { type: 'medication', description: 'Consider over-the-counter antihistamines' }
+      ],
+      requiredTests: ['Blood Test', 'Allergy Panel'],
+      lifestyle: [
+        { category: 'Diet', suggestion: 'Increase Vitamin C intake' },
+        { category: 'Exercise', suggestion: 'Light stretching only until symptoms improve' },
+        { category: 'Sleep', suggestion: 'Aim for 8-9 hours with elevated head position' }
+      ]
+    };
+
+    setAiDiagnosis(mockDiagnosis);
+    setAnalyzing(false);
+  };
+
+  const AIHealthAnalyzer = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-xl shadow-lg p-6 mt-6"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <BrainCircuit className="w-8 h-8 text-purple-600 mr-3" />
+          <h2 className="text-2xl font-bold text-gray-800">AI Health Analyzer</h2>
+        </div>
+        <div className="flex space-x-2">
+          {['symptoms', 'insights', 'trends'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setAiActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                aiActiveTab === tab
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {aiActiveTab === 'symptoms' && (
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              value={symptomInput}
+              onChange={(e) => setSymptomInput(e.target.value)}
+              placeholder="Describe your symptoms... (e.g., headache, fever)"
+              className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-purple-300"
+            />
+            <button
+              onClick={() => voiceInput ? setVoiceInput(false) : setVoiceInput(true)}
+              className={`p-3 rounded-lg ${
+                voiceInput ? 'bg-red-500' : 'bg-blue-500'
+              } text-white`}
+            >
+              {voiceInput ? 'Stop' : 'Voice Input'}
+            </button>
+            <button
+              onClick={() => simulateSymptomAnalysis(symptomInput)}
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700"
+            >
+              Analyze
+            </button>
+          </div>
+
+          {analyzing && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center p-4"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <Microscope className="w-6 h-6 text-purple-600 animate-pulse" />
+                <span className="text-lg text-gray-700">Analyzing symptoms...</span>
+              </div>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-purple-500"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2 }}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {aiDiagnosis && !analyzing && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-purple-800 mb-3">Possible Conditions</h3>
+                  {aiDiagnosis.possibleConditions.map((condition, index) => (
+                    <div key={index} className="mb-2 last:mb-0">
+                      <div className="flex justify-between items-center">
+                        <span>{condition.name}</span>
+                        <span className={`px-2 py-1 rounded text-sm ${
+                          condition.urgency === 'high' ? 'bg-red-100 text-red-700' :
+                          condition.urgency === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-green-100 text-green-700'
+                        }`}>
+                          {Math.round(condition.probability * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-purple-200 rounded-full h-1.5 mt-1">
+                        <div
+                          className="bg-purple-600 h-1.5 rounded-full"
+                          style={{ width: `${condition.probability * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-blue-800 mb-3">Recommended Actions</h3>
+                  {aiDiagnosis.recommendations.map((rec, index) => (
+                    <div key={index} className="flex items-start mb-2 last:mb-0">
+                      <div className="bg-blue-100 p-1 rounded mr-2">
+                        {rec.type === 'rest' ? '🛏️' :
+                         rec.type === 'hydration' ? '💧' :
+                         rec.type === 'medication' ? '💊' : '✨'}
+                      </div>
+                      <span className="text-blue-800">{rec.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-green-800 mb-3">Lifestyle Adjustments</h3>
+                  {aiDiagnosis.lifestyle.map((item, index) => (
+                    <div key={index} className="mb-2 last:mb-0">
+                      <span className="font-medium text-green-700">{item.category}:</span>
+                      <p className="text-green-800 ml-4">{item.suggestion}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-yellow-800 mb-3">Required Tests</h3>
+                  <div className="space-y-2">
+                    {aiDiagnosis.requiredTests.map((test, index) => (
+                      <div key={index} className="flex items-center">
+                        <Stethoscope className="w-5 h-5 text-yellow-600 mr-2" />
+                        <span className="text-yellow-800">{test}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {aiActiveTab === 'insights' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Object.entries(healthScore.categories).map(([category, score]) => (
+              <motion.div
+                key={category}
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-lg"
+              >
+                <h3 className="font-semibold text-gray-700 mb-2 capitalize">{category}</h3>
+                <div className="flex items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${score}%` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                      className="h-full rounded-full bg-purple-600"
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-gray-600">{score}%</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {aiActiveTab === 'trends' && (
+        <div className="space-y-6">
+          {/* Add health trends visualization here */}
+        </div>
+      )}
+    </motion.div>
+  );
+
   if (isLoggedIn) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -607,6 +1011,10 @@ export default function PatientDemoPage() {
               <LabResultsCard results={labResultsData.results} />
             </motion.div>
           </div>
+
+          <AIComponents />
+
+          <AIHealthAnalyzer />
 
           {/* Notification Toast */}
           <AnimatePresence>

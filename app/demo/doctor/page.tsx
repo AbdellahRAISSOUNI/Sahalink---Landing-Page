@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Users, Clock, ChartBar, Bell, Settings, LogOut, Search, User, FileText, QrCode, X, BarChart, FileCheck } from 'lucide-react';
+import { ArrowLeft, Calendar, Users, Clock, ChartBar, Bell, Settings, LogOut, Search, User, FileText, QrCode, X, BarChart, FileCheck, Sparkles, Brain, Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import DemoHeader from '../components/DemoHeader';
 import dynamic from 'next/dynamic';
@@ -15,6 +15,8 @@ import SettingsContent from '@/app/components/doctor/SettingsContent';
 import AnalyticsContent from '@/app/components/doctor/AnalyticsContent';
 import MedicalRecordsContent from '@/app/components/doctor/MedicalRecordsContent';
 import ScheduleContent from '@/app/components/doctor/ScheduleContent';
+import AIDiagnosisContent from '@/app/components/doctor/AIDiagnosisContent';
+import AIReportsContent from '@/app/components/doctor/AIReportsContent';
 
 export default function DoctorDemoPage() {
   const router = useRouter();
@@ -28,6 +30,14 @@ export default function DoctorDemoPage() {
   const [activePatient, setActivePatient] = useState(null);
   const [showPatientDetails, setShowPatientDetails] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiMessage, setAiMessage] = useState('');
+  const [isAITyping, setIsAITyping] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState([
+    { id: 1, title: 'Potential Diagnosis', content: 'Based on symptoms, consider checking for chronic sinusitis', confidence: 85 },
+    { id: 2, title: 'Test Recommendation', content: 'Recommend CBC and chest X-ray', confidence: 92 },
+    { id: 3, title: 'Treatment Plan', content: 'Consider prescribed antibiotics course', confidence: 78 },
+  ]);
 
   // Check login state on mount
   useEffect(() => {
@@ -95,8 +105,118 @@ export default function DoctorDemoPage() {
     });
   };
 
+  // Simulated AI typing effect
+  const simulateAIResponse = (message) => {
+    setIsAITyping(true);
+    let currentText = '';
+    const words = message.split(' ');
+    
+    const typeWord = (index) => {
+      if (index < words.length) {
+        currentText += (index === 0 ? '' : ' ') + words[index];
+        setAiMessage(currentText);
+        setTimeout(() => typeWord(index + 1), 100);
+      } else {
+        setIsAITyping(false);
+      }
+    };
+    
+    typeWord(0);
+  };
+
+  // AI Assistant Component
+  const AIAssistant = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed bottom-24 right-4 w-96 bg-white rounded-lg shadow-xl z-50"
+    >
+      <div className="p-4 border-b flex justify-between items-center bg-blue-50 rounded-t-lg">
+        <div className="flex items-center space-x-2">
+          <Bot className="w-6 h-6 text-blue-600" />
+          <h3 className="font-semibold text-blue-800">AI Assistant</h3>
+        </div>
+        <button onClick={() => setShowAIAssistant(false)}>
+          <X className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
+      <div className="h-96 overflow-y-auto p-4 space-y-4">
+        <div className="bg-blue-50 p-3 rounded-lg max-w-[80%]">
+          How can I assist you today?
+        </div>
+        {aiMessage && (
+          <div className="bg-gray-100 p-3 rounded-lg max-w-[80%] ml-auto">
+            {aiMessage}
+            {isAITyping && <span className="animate-pulse">|</span>}
+          </div>
+        )}
+      </div>
+      <div className="p-4 border-t">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            placeholder="Ask me anything..."
+            className="flex-1 rounded-lg border border-gray-300 p-2"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && e.target.value) {
+                simulateAIResponse("I understand you're asking about " + e.target.value + ". Let me analyze that for you...");
+                e.target.value = '';
+              }
+            }}
+          />
+          <button className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            <Sparkles className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  // Add AI Analysis Component
+  const AIAnalysisSection = () => (
+    <div className="bg-white p-6 rounded-xl shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold flex items-center space-x-2">
+          <Brain className="w-5 h-5 text-blue-500" />
+          <span>AI Insights</span>
+        </h3>
+        <span className="text-sm text-gray-500">Updated just now</span>
+      </div>
+      <div className="space-y-4">
+        {aiSuggestions.map((suggestion) => (
+          <motion.div
+            key={suggestion.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 border rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-medium text-gray-800">{suggestion.title}</h4>
+                <p className="text-gray-600 text-sm mt-1">{suggestion.content}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-500">Confidence</span>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  suggestion.confidence > 85 ? 'bg-green-100 text-green-800' :
+                  suggestion.confidence > 70 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {suggestion.confidence}%
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+
   const menuItems = [
     { id: 'Dashboard', icon: ChartBar, label: 'Dashboard' },
+    { id: 'AIDiagnosis', icon: Brain, label: 'AI Diagnosis' },
+    { id: 'AIReports', icon: FileText, label: 'AI Reports' },
     { id: 'Analytics', icon: BarChart, label: 'Analytics' },
     { id: 'Schedule', icon: Calendar, label: 'Schedule' },
     { id: 'Patients', icon: Users, label: 'Patients' },
@@ -310,7 +430,14 @@ export default function DoctorDemoPage() {
 
             {/* Main Content Area */}
             <div className="flex-1 overflow-auto bg-gray-50">
-              {activeSection === 'Dashboard' && <DashboardContent />}
+              {activeSection === 'Dashboard' && (
+                <div className="p-6 space-y-6">
+                  <DashboardContent />
+                  <AIAnalysisSection />
+                </div>
+              )}
+              {activeSection === 'AIDiagnosis' && <AIDiagnosisContent />}
+              {activeSection === 'AIReports' && <AIReportsContent />}
               {activeSection === 'Analytics' && <AnalyticsContent />}
               {activeSection === 'Schedule' && <ScheduleContent />}
               {activeSection === 'Patients' && <PatientsContent />}
@@ -320,6 +447,19 @@ export default function DoctorDemoPage() {
               {activeSection === 'Settings' && <SettingsContent />}
             </div>
           </main>
+
+          {/* Floating AI Assistant Button */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowAIAssistant(!showAIAssistant)}
+            className="fixed bottom-6 right-6 p-4 bg-blue-500 text-white rounded-full shadow-lg z-40"
+          >
+            <Bot className="w-6 h-6" />
+          </motion.button>
+
+          {/* AI Assistant Panel */}
+          {showAIAssistant && <AIAssistant />}
         </div>
       ) : (
         <motion.div 
