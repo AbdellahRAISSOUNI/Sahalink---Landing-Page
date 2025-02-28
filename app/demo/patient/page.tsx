@@ -72,7 +72,7 @@ export default function PatientDemoPage() {
   const [patientData, setPatientData] = useState({
     personalInfo: {
       name: 'Abdellah Raissouni',
-      age: 20,
+      age: 22,
       gender: 'Male',
       bloodType: 'A+',
       height: '174 cm',
