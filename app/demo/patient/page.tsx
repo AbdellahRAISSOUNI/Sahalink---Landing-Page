@@ -76,7 +76,7 @@ export default function PatientDemoPage() {
       gender: 'Male',
       bloodType: 'A+',
       height: '174 cm',
-      weight: '65 kg',
+      weight: '71 kg',
       nationalId: 'MAR123456789',
       dateOfBirth: '2003-09-28',
       maritalStatus: 'Single',
